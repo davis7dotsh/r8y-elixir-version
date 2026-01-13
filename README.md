@@ -1,4 +1,4 @@
-# R8yV4
+# r8y-v4
 
 All the stuff for how ralph was used is in the RALPH_LAND directory. It's stupid simple. I had sonnet make the prompt and the script. Then I let it run. That's it.
 
