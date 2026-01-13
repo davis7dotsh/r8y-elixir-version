@@ -1,0 +1,81 @@
+/* Minimal Professional Dark Theme */
+
+@import "tailwindcss" source(none);
+@source "../css";
+@source "../js";
+@source "../../lib/r8y_v4_web";
+
+@plugin "../vendor/heroicons";
+
+@plugin "../vendor/daisyui" {
+  themes: false;
+}
+
+/* Clean dark theme */
+@plugin "../vendor/daisyui-theme" {
+  name: "dark";
+  default: true;
+  prefersdark: true;
+  color-scheme: "dark";
+  
+  --color-base-100: oklch(18% 0.01 260);
+  --color-base-200: oklch(14% 0.01 260);
+  --color-base-300: oklch(22% 0.01 260);
+  --color-base-content: oklch(90% 0.01 260);
+  
+  --color-primary: oklch(65% 0.15 250);
+  --color-primary-content: oklch(98% 0.01 250);
+  
+  --color-secondary: oklch(60% 0.12 280);
+  --color-secondary-content: oklch(98% 0.01 280);
+  
+  --color-accent: oklch(65% 0.15 165);
+  --color-accent-content: oklch(98% 0.01 165);
+  
+  --color-neutral: oklch(28% 0.01 260);
+  --color-neutral-content: oklch(85% 0.01 260);
+  
+  --color-info: oklch(65% 0.15 250);
+  --color-info-content: oklch(98% 0.01 250);
+  --color-success: oklch(65% 0.15 165);
+  --color-success-content: oklch(98% 0.01 165);
+  --color-warning: oklch(70% 0.15 85);
+  --color-warning-content: oklch(20% 0.02 85);
+  --color-error: oklch(60% 0.2 25);
+  --color-error-content: oklch(98% 0.01 25);
+  
+  --radius-selector: 0.375rem;
+  --radius-field: 0.375rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+/* LiveView loading states */
+@custom-variant phx-click-loading (.phx-click-loading&, .phx-click-loading &);
+@custom-variant phx-submit-loading (.phx-submit-loading&, .phx-submit-loading &);
+@custom-variant phx-change-loading (.phx-change-loading&, .phx-change-loading &);
+
+[data-phx-session], [data-phx-teleported-src] { display: contents }
+
+/* Typography */
+@theme {
+  --font-mono: ui-monospace, monospace;
+  --font-sans: "Inter", system-ui, sans-serif;
+}
+
+/* Card component */
+.card {
+  background: oklch(20% 0.01 260);
+  border: 1px solid oklch(28% 0.01 260);
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+/* Tabular numbers for stats */
+.stat-value {
+  font-variant-numeric: tabular-nums;
+}

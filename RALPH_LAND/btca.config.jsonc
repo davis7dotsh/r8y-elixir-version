@@ -1,0 +1,28 @@
+{
+	"$schema": "https://btca.dev/btca.schema.json",
+	"resources": [
+		{
+			"name": "elixir",
+			"type": "git",
+			"url": "https://github.com/elixir-lang/elixir",
+			"branch": "main",
+			"specialNotes": "Elixir language source code. Focus on lib directory for standard library and guides for documentation."
+		},
+		{
+			"name": "phoenix",
+			"type": "git",
+			"url": "https://github.com/phoenixframework/phoenix",
+			"branch": "main",
+			"specialNotes": "Phoenix web framework. Check guides directory for documentation and lib for source code."
+		},
+		{
+			"name": "ecto",
+			"type": "git",
+			"url": "https://github.com/elixir-ecto/ecto",
+			"branch": "master",
+			"specialNotes": "Ecto database wrapper and query generator. Focus on lib/ecto for core functionality."
+		}
+	],
+	"model": "claude-haiku-4-5",
+	"provider": "opencode"
+}
