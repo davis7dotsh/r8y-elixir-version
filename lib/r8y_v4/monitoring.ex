@@ -366,15 +366,15 @@ defmodule R8yV4.Monitoring do
       )
 
     case {sort_by, direction} do
-      {"name", :asc} -> from(q in base_query, order_by: [asc: q.sponsor.name])
-      {"name", :desc} -> from(q in base_query, order_by: [desc: q.sponsor.name])
-      {"ads", :asc} -> from(q in base_query, order_by: [asc: count(v.yt_video_id)])
-      {"ads", :desc} -> from(q in base_query, order_by: [desc: count(v.yt_video_id)])
-      {"views", :asc} -> from(q in base_query, order_by: [asc: sum(v.view_count)])
-      {"views", :desc} -> from(q in base_query, order_by: [desc: sum(v.view_count)])
-      {"last_published", :asc} -> from(q in base_query, order_by: [asc: max(v.published_at)])
-      {"last_published", :desc} -> from(q in base_query, order_by: [desc: max(v.published_at)])
-      _ -> from(q in base_query, order_by: [desc: max(v.published_at)])
+      {"name", :asc} -> order_by(base_query, [s], asc: s.name)
+      {"name", :desc} -> order_by(base_query, [s], desc: s.name)
+      {"ads", :asc} -> order_by(base_query, [s, stv, v], asc: count(v.yt_video_id))
+      {"ads", :desc} -> order_by(base_query, [s, stv, v], desc: count(v.yt_video_id))
+      {"views", :asc} -> order_by(base_query, [s, stv, v], asc: sum(v.view_count))
+      {"views", :desc} -> order_by(base_query, [s, stv, v], desc: sum(v.view_count))
+      {"last_published", :asc} -> order_by(base_query, [s, stv, v], asc: max(v.published_at))
+      {"last_published", :desc} -> order_by(base_query, [s, stv, v], desc: max(v.published_at))
+      _ -> order_by(base_query, [s, stv, v], desc: max(v.published_at))
     end
   end
 
