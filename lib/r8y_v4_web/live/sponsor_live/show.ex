@@ -206,7 +206,11 @@ defmodule R8yV4Web.SponsorLive.Show do
 
   defp expandable_comment(assigns) do
     truncated = String.length(assigns.text) > @max_comment_length
-    assigns = assign(assigns, :truncated, truncated)
+
+    assigns =
+      assigns
+      |> assign(:truncated, truncated)
+      |> assign(:max_comment_length, @max_comment_length)
 
     ~H"""
     <%= if @truncated do %>
