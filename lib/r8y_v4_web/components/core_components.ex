@@ -299,40 +299,27 @@ defmodule R8yV4Web.CoreComponents do
         </thead>
         <tbody id={@id} phx-update={is_struct(@rows, Phoenix.LiveView.LiveStream) && "stream"}>
           <%= for row <- @rows do %>
-            <%= if @row_href do %>
-              <.link
-                navigate={@row_href.(@row_item.(row))}
-                id={@row_id && @row_id.(row)}
-                class="table-row border-b border-base-300/50 hover:bg-base-300/30 cursor-pointer"
+            <tr
+              id={@row_id && @row_id.(row)}
+              phx-click={@row_href && JS.navigate(@row_href.(@row_item.(row)))}
+              class={[
+                "border-b border-base-300/50 hover:bg-base-300/30",
+                (@row_href || @row_click) && "cursor-pointer"
+              ]}
+            >
+              <td
+                :for={col <- @col}
+                phx-click={@row_click && @row_click.(row)}
+                class="py-3 px-3"
               >
-                <td :for={col <- @col} class="py-3 px-3">
-                  {render_slot(col, @row_item.(row))}
-                </td>
-                <td :if={@action != []} class="py-3 px-3">
-                  <div class="flex items-center justify-end gap-2">
-                    {render_slot(@action, @row_item.(row))}
-                  </div>
-                </td>
-              </.link>
-            <% else %>
-              <tr
-                id={@row_id && @row_id.(row)}
-                class="border-b border-base-300/50 hover:bg-base-300/30"
-              >
-                <td
-                  :for={col <- @col}
-                  phx-click={@row_click && @row_click.(row)}
-                  class={["py-3 px-3", @row_click && "cursor-pointer"]}
-                >
-                  {render_slot(col, @row_item.(row))}
-                </td>
-                <td :if={@action != []} class="py-3 px-3">
-                  <div class="flex items-center justify-end gap-2">
-                    {render_slot(@action, @row_item.(row))}
-                  </div>
-                </td>
-              </tr>
-            <% end %>
+                {render_slot(col, @row_item.(row))}
+              </td>
+              <td :if={@action != []} class="py-3 px-3">
+                <div class="flex items-center justify-end gap-2">
+                  {render_slot(@action, @row_item.(row))}
+                </div>
+              </td>
+            </tr>
           <% end %>
         </tbody>
       </table>

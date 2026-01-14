@@ -332,9 +332,11 @@ defmodule R8yV4.Monitoring do
   def list_sponsors_with_stats(opts \\ []) do
     yt_channel_id = Keyword.get(opts, :yt_channel_id)
     limit_value = Keyword.get(opts, :limit)
+    sort_by = Keyword.get(opts, :sort_by, "last_published")
+    sort_dir = Keyword.get(opts, :sort_dir, "desc")
 
     Sponsor
-    |> sponsors_with_stats_query()
+    |> sponsors_with_stats_query(sort_by, sort_dir)
     |> maybe_filter_by_channel(yt_channel_id)
     |> maybe_limit(limit_value)
     |> Repo.all()
@@ -345,21 +347,35 @@ defmodule R8yV4.Monitoring do
     list_sponsors_with_stats(yt_channel_id: yt_channel_id)
   end
 
-  defp sponsors_with_stats_query(query) do
-    from(s in query,
-      left_join: stv in SponsorToVideo,
-      on: stv.sponsor_id == s.sponsor_id,
-      left_join: v in Video,
-      on: v.yt_video_id == stv.yt_video_id,
-      group_by: s.sponsor_id,
-      order_by: [desc: max(v.published_at)],
-      select: %{
-        sponsor: s,
-        total_views: sum(v.view_count),
-        total_videos: count(v.yt_video_id),
-        last_video_published_at: max(v.published_at)
-      }
-    )
+  defp sponsors_with_stats_query(query, sort_by, sort_dir) do
+    direction = if sort_dir == "asc", do: :asc, else: :desc
+
+    base_query =
+      from(s in query,
+        left_join: stv in SponsorToVideo,
+        on: stv.sponsor_id == s.sponsor_id,
+        left_join: v in Video,
+        on: v.yt_video_id == stv.yt_video_id,
+        group_by: s.sponsor_id,
+        select: %{
+          sponsor: s,
+          total_views: sum(v.view_count),
+          total_videos: count(v.yt_video_id),
+          last_video_published_at: max(v.published_at)
+        }
+      )
+
+    case {sort_by, direction} do
+      {"name", :asc} -> from(q in base_query, order_by: [asc: q.sponsor.name])
+      {"name", :desc} -> from(q in base_query, order_by: [desc: q.sponsor.name])
+      {"ads", :asc} -> from(q in base_query, order_by: [asc: count(v.yt_video_id)])
+      {"ads", :desc} -> from(q in base_query, order_by: [desc: count(v.yt_video_id)])
+      {"views", :asc} -> from(q in base_query, order_by: [asc: sum(v.view_count)])
+      {"views", :desc} -> from(q in base_query, order_by: [desc: sum(v.view_count)])
+      {"last_published", :asc} -> from(q in base_query, order_by: [asc: max(v.published_at)])
+      {"last_published", :desc} -> from(q in base_query, order_by: [desc: max(v.published_at)])
+      _ -> from(q in base_query, order_by: [desc: max(v.published_at)])
+    end
   end
 
   defp maybe_limit(query, limit_value) when is_integer(limit_value) do
