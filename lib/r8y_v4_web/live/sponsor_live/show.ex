@@ -12,7 +12,8 @@ defmodule R8yV4Web.SponsorLive.Show do
      socket
      |> assign(:sponsor_id, sponsor_id)
      |> assign(:page_title, "Sponsor")
-     |> assign(:details, nil)}
+     |> assign(:details, nil)
+     |> assign(:expanded_comments, MapSet.new())}
   end
 
   @impl true
@@ -23,6 +24,20 @@ defmodule R8yV4Web.SponsorLive.Show do
      socket
      |> assign(:page_title, details.sponsor.name)
      |> assign(:details, details)}
+  end
+
+  @impl true
+  def handle_event("toggle_comment", %{"comment-id" => comment_id}, socket) do
+    expanded = socket.assigns.expanded_comments
+
+    expanded =
+      if MapSet.member?(expanded, comment_id) do
+        MapSet.delete(expanded, comment_id)
+      else
+        MapSet.put(expanded, comment_id)
+      end
+
+    {:noreply, assign(socket, :expanded_comments, expanded)}
   end
 
   @impl true
@@ -118,37 +133,58 @@ defmodule R8yV4Web.SponsorLive.Show do
                 <p class="text-sm text-base-content/50">No mentions found</p>
               </div>
             <% else %>
-              <.table
-                id="sponsor-mentions"
-                rows={@details.sponsor_mention_comments}
-                row_item={fn row -> row end}
-              >
-                <:col :let={row} label="Comment">
-                  <span class="block max-w-md truncate">{row.comment.text}</span>
-                </:col>
-                <:col :let={row} label="Video">
-                  <.link
-                    navigate={~p"/videos/#{row.yt_video_id}"}
-                    class="text-primary hover:underline text-sm truncate max-w-[150px] block"
-                  >
-                    {row.video_title}
-                  </.link>
-                </:col>
-                <:col :let={row} label="Author">
-                  <span class="text-sm">{row.comment.author}</span>
-                </:col>
-                <:col :let={row} label="Likes">
-                  <span class="tabular-nums">{format_number(row.comment.like_count)}</span>
-                </:col>
-                <:action :let={row}>
-                  <.button
-                    href={youtube_comment_url(row.yt_video_id, row.comment.yt_comment_id)}
-                    id={"open-sponsor-mention-#{row.comment.yt_comment_id}"}
-                  >
-                    Open
-                  </.button>
-                </:action>
-              </.table>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-base-300">
+                      <th class="text-left py-3 px-3 font-medium text-base-content/60">Comment</th>
+                      <th class="text-left py-3 px-3 font-medium text-base-content/60">Video</th>
+                      <th class="text-left py-3 px-3 font-medium text-base-content/60">Author</th>
+                      <th class="text-left py-3 px-3 font-medium text-base-content/60">Likes</th>
+                      <th class="py-3 px-3"><span class="sr-only">Actions</span></th>
+                    </tr>
+                  </thead>
+                  <tbody id="sponsor-mentions">
+                    <tr
+                      :for={row <- @details.sponsor_mention_comments}
+                      id={"sponsor-mention-#{row.comment.yt_comment_id}"}
+                      class="border-b border-base-300/50 hover:bg-base-300/30"
+                    >
+                      <td class="py-3 px-3">
+                        <.expandable_comment
+                          text={row.comment.text}
+                          comment_id={row.comment.yt_comment_id}
+                          expanded={MapSet.member?(@expanded_comments, row.comment.yt_comment_id)}
+                        />
+                      </td>
+                      <td class="py-3 px-3">
+                        <.link
+                          navigate={~p"/videos/#{row.yt_video_id}"}
+                          class="text-primary hover:underline text-sm truncate max-w-[150px] block"
+                        >
+                          {row.video_title}
+                        </.link>
+                      </td>
+                      <td class="py-3 px-3">
+                        <span class="text-sm">{row.comment.author}</span>
+                      </td>
+                      <td class="py-3 px-3">
+                        <span class="tabular-nums">{format_number(row.comment.like_count)}</span>
+                      </td>
+                      <td class="py-3 px-3">
+                        <div class="flex items-center justify-end gap-2">
+                          <.button
+                            href={youtube_comment_url(row.yt_video_id, row.comment.yt_comment_id)}
+                            id={"open-sponsor-mention-#{row.comment.yt_comment_id}"}
+                          >
+                            Open
+                          </.button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             <% end %>
           </div>
         <% else %>
@@ -159,6 +195,37 @@ defmodule R8yV4Web.SponsorLive.Show do
         <% end %>
       </div>
     </Layouts.app>
+    """
+  end
+
+  @max_comment_length 100
+
+  attr :text, :string, required: true
+  attr :comment_id, :string, required: true
+  attr :expanded, :boolean, required: true
+
+  defp expandable_comment(assigns) do
+    truncated = String.length(assigns.text) > @max_comment_length
+    assigns = assign(assigns, :truncated, truncated)
+
+    ~H"""
+    <%= if @truncated do %>
+      <button
+        phx-click="toggle_comment"
+        phx-value-comment-id={@comment_id}
+        class="text-left max-w-md cursor-pointer hover:bg-base-300/50 rounded px-1 -mx-1 transition-colors"
+      >
+        <%= if @expanded do %>
+          <span class="block whitespace-pre-wrap">{@text}</span>
+          <span class="text-xs text-primary mt-1 block">Click to collapse</span>
+        <% else %>
+          <span class="block truncate">{String.slice(@text, 0, @max_comment_length)}...</span>
+          <span class="text-xs text-primary mt-1 block">Click to expand</span>
+        <% end %>
+      </button>
+    <% else %>
+      <span class="block max-w-md">{@text}</span>
+    <% end %>
     """
   end
 

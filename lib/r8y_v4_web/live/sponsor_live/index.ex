@@ -89,26 +89,23 @@ defmodule R8yV4Web.SponsorLive.Index do
               </p>
             </div>
           <% else %>
-            <.table id="sponsors-table" rows={@sponsors} row_item={fn row -> row end}>
+            <.table
+              id="sponsors-table"
+              rows={@sponsors}
+              row_item={fn row -> row end}
+              row_id={fn row -> "sponsors-index-sponsor-#{row.sponsor.sponsor_id}" end}
+              row_href={fn row -> ~p"/sponsors/#{row.sponsor.sponsor_id}" end}
+            >
               <:col :let={row} label="Sponsor">
-                <.link
-                  navigate={~p"/sponsors/#{row.sponsor.sponsor_id}"}
-                  id={"sponsors-index-sponsor-#{row.sponsor.sponsor_id}"}
-                  class="text-primary hover:underline font-medium"
-                >
-                  {row.sponsor.name}
-                </.link>
+                <span class="text-primary font-medium">{row.sponsor.name}</span>
                 <p class="text-xs text-base-content/40 mt-1 font-mono truncate max-w-[200px]">
                   {row.sponsor.sponsor_key}
                 </p>
               </:col>
               <:col :let={row} label="Channel">
-                <.link
-                  navigate={~p"/channels/#{row.sponsor.yt_channel_id}"}
-                  class="text-sm text-base-content/50 hover:text-primary transition-colors font-mono truncate max-w-[120px] block"
-                >
+                <span class="text-sm text-base-content/50 font-mono truncate max-w-[120px] block">
                   {row.sponsor.yt_channel_id}
-                </.link>
+                </span>
               </:col>
               <:col :let={row} label="Ads">
                 <span class="tabular-nums text-success">{format_number(row.total_videos)}</span>

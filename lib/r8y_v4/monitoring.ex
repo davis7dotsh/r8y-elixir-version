@@ -154,7 +154,16 @@ defmodule R8yV4.Monitoring do
         :flagged -> :flagged
         "unprocessed" -> :unprocessed
         :unprocessed -> :unprocessed
+        "sponsor" -> :sponsor
+        :sponsor -> :sponsor
         _ -> :all
+      end
+
+    sort =
+      case Keyword.get(opts, :sort, :recent) do
+        "likes" -> :likes
+        :likes -> :likes
+        _ -> :recent
       end
 
     limit_value = Keyword.get(opts, :limit)
@@ -162,7 +171,12 @@ defmodule R8yV4.Monitoring do
     query =
       Comment
       |> where([c], c.yt_video_id == ^yt_video_id)
-      |> order_by([c], desc: c.published_at)
+
+    query =
+      case sort do
+        :likes -> order_by(query, [c], desc: c.like_count)
+        :recent -> order_by(query, [c], desc: c.published_at)
+      end
 
     query =
       case filter do
@@ -175,6 +189,9 @@ defmodule R8yV4.Monitoring do
 
         :unprocessed ->
           where(query, [c], c.is_processed == false)
+
+        :sponsor ->
+          where(query, [c], c.is_sponsor_mention == true)
 
         :all ->
           query

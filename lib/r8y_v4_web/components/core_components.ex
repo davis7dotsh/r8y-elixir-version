@@ -269,6 +269,7 @@ defmodule R8yV4Web.CoreComponents do
   attr :rows, :list, required: true
   attr :row_id, :any, default: nil
   attr :row_click, :any, default: nil
+  attr :row_href, :any, default: nil, doc: "Function that returns a navigate path for the row"
   attr :row_item, :any, default: &Function.identity/1
 
   slot :col, required: true do
@@ -297,24 +298,42 @@ defmodule R8yV4Web.CoreComponents do
           </tr>
         </thead>
         <tbody id={@id} phx-update={is_struct(@rows, Phoenix.LiveView.LiveStream) && "stream"}>
-          <tr
-            :for={row <- @rows}
-            id={@row_id && @row_id.(row)}
-            class="border-b border-base-300/50 hover:bg-base-300/30"
-          >
-            <td
-              :for={col <- @col}
-              phx-click={@row_click && @row_click.(row)}
-              class={["py-3 px-3", @row_click && "cursor-pointer"]}
-            >
-              {render_slot(col, @row_item.(row))}
-            </td>
-            <td :if={@action != []} class="py-3 px-3">
-              <div class="flex items-center justify-end gap-2">
-                {render_slot(@action, @row_item.(row))}
-              </div>
-            </td>
-          </tr>
+          <%= for row <- @rows do %>
+            <%= if @row_href do %>
+              <.link
+                navigate={@row_href.(@row_item.(row))}
+                id={@row_id && @row_id.(row)}
+                class="table-row border-b border-base-300/50 hover:bg-base-300/30 cursor-pointer"
+              >
+                <td :for={col <- @col} class="py-3 px-3">
+                  {render_slot(col, @row_item.(row))}
+                </td>
+                <td :if={@action != []} class="py-3 px-3">
+                  <div class="flex items-center justify-end gap-2">
+                    {render_slot(@action, @row_item.(row))}
+                  </div>
+                </td>
+              </.link>
+            <% else %>
+              <tr
+                id={@row_id && @row_id.(row)}
+                class="border-b border-base-300/50 hover:bg-base-300/30"
+              >
+                <td
+                  :for={col <- @col}
+                  phx-click={@row_click && @row_click.(row)}
+                  class={["py-3 px-3", @row_click && "cursor-pointer"]}
+                >
+                  {render_slot(col, @row_item.(row))}
+                </td>
+                <td :if={@action != []} class="py-3 px-3">
+                  <div class="flex items-center justify-end gap-2">
+                    {render_slot(@action, @row_item.(row))}
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          <% end %>
         </tbody>
       </table>
     </div>

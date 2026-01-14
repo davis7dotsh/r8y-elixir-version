@@ -16,6 +16,7 @@ defmodule R8yV4Web.VideoLive.Show do
      |> assign(:page_title, "Video")
      |> assign(:video, nil)
      |> assign(:filter, "all")
+     |> assign(:sort, "recent")
      |> assign(:comments_limit, @comments_limit)
      |> assign(:notifications, [])
      |> stream_configure(:comments, dom_id: &("comments-" <> &1.yt_comment_id))
@@ -26,12 +27,14 @@ defmodule R8yV4Web.VideoLive.Show do
   def handle_params(params, _url, socket) do
     yt_video_id = socket.assigns.yt_video_id
     filter = Map.get(params, "filter", "all")
+    sort = Map.get(params, "sort", "recent")
 
     video = Monitoring.get_video_with_relations!(yt_video_id)
 
     comments =
       Monitoring.list_comments_for_video(yt_video_id,
         filter: filter,
+        sort: sort,
         limit: @comments_limit
       )
 
@@ -42,6 +45,7 @@ defmodule R8yV4Web.VideoLive.Show do
      |> assign(:page_title, video.title)
      |> assign(:video, video)
      |> assign(:filter, filter)
+     |> assign(:sort, sort)
      |> assign(:notifications, notifications)
      |> stream(:comments, comments, reset: true)}
   end
@@ -128,28 +132,56 @@ defmodule R8yV4Web.VideoLive.Show do
                 <span class="text-xs text-base-content/40">(up to {@comments_limit})</span>
               </div>
 
-              <div class="flex items-center gap-1">
-                <.filter_tab
-                  href={filter_patch_path(@video.yt_video_id, "all")}
-                  active={@filter == "all"}
-                  id="filter-all"
-                >
-                  All
-                </.filter_tab>
-                <.filter_tab
-                  href={filter_patch_path(@video.yt_video_id, "flagged")}
-                  active={@filter == "flagged"}
-                  id="filter-flagged"
-                >
-                  Flagged
-                </.filter_tab>
-                <.filter_tab
-                  href={filter_patch_path(@video.yt_video_id, "unprocessed")}
-                  active={@filter == "unprocessed"}
-                  id="filter-unprocessed"
-                >
-                  Unprocessed
-                </.filter_tab>
+              <div class="flex items-center gap-4">
+                <div class="flex items-center gap-1">
+                  <span class="text-xs text-base-content/40 mr-1">Sort:</span>
+                  <.filter_tab
+                    href={patch_path(@video.yt_video_id, @filter, "recent")}
+                    active={@sort == "recent"}
+                    id="sort-recent"
+                  >
+                    Recent
+                  </.filter_tab>
+                  <.filter_tab
+                    href={patch_path(@video.yt_video_id, @filter, "likes")}
+                    active={@sort == "likes"}
+                    id="sort-likes"
+                  >
+                    Likes
+                  </.filter_tab>
+                </div>
+
+                <div class="flex items-center gap-1">
+                  <span class="text-xs text-base-content/40 mr-1">Filter:</span>
+                  <.filter_tab
+                    href={patch_path(@video.yt_video_id, "all", @sort)}
+                    active={@filter == "all"}
+                    id="filter-all"
+                  >
+                    All
+                  </.filter_tab>
+                  <.filter_tab
+                    href={patch_path(@video.yt_video_id, "flagged", @sort)}
+                    active={@filter == "flagged"}
+                    id="filter-flagged"
+                  >
+                    Flagged
+                  </.filter_tab>
+                  <.filter_tab
+                    href={patch_path(@video.yt_video_id, "sponsor", @sort)}
+                    active={@filter == "sponsor"}
+                    id="filter-sponsor"
+                  >
+                    Sponsor
+                  </.filter_tab>
+                  <.filter_tab
+                    href={patch_path(@video.yt_video_id, "unprocessed", @sort)}
+                    active={@filter == "unprocessed"}
+                    id="filter-unprocessed"
+                  >
+                    Unprocessed
+                  </.filter_tab>
+                </div>
               </div>
             </div>
 
@@ -311,8 +343,18 @@ defmodule R8yV4Web.VideoLive.Show do
     """
   end
 
-  defp filter_patch_path(yt_video_id, "all"), do: ~p"/videos/#{yt_video_id}"
-  defp filter_patch_path(yt_video_id, filter), do: ~p"/videos/#{yt_video_id}?filter=#{filter}"
+  defp patch_path(yt_video_id, filter, sort) do
+    params =
+      %{}
+      |> then(fn p -> if filter != "all", do: Map.put(p, :filter, filter), else: p end)
+      |> then(fn p -> if sort != "recent", do: Map.put(p, :sort, sort), else: p end)
+
+    if map_size(params) == 0 do
+      ~p"/videos/#{yt_video_id}"
+    else
+      ~p"/videos/#{yt_video_id}?#{params}"
+    end
+  end
 
   defp youtube_video_url(yt_video_id), do: "https://www.youtube.com/watch?v=#{yt_video_id}"
 
