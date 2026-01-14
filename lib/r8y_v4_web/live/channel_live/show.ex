@@ -186,9 +186,13 @@ defmodule R8yV4Web.ChannelLive.Show do
             <span class="text-sm tabular-nums">{format_number(video.view_count)}</span>
           </:col>
           <:col :let={video} label="Sponsor">
-            <span class={["text-sm", video_sponsor_label(video) != "—" && "text-success"]}>
-              {video_sponsor_label(video)}
-            </span>
+            <%= if sponsor = Enum.at(video.sponsors || [], 0) do %>
+              <.link navigate={~p"/sponsors/#{sponsor.sponsor_id}"} class="text-sm text-success hover:underline">
+                {sponsor.name}
+              </.link>
+            <% else %>
+              <span class="text-sm">—</span>
+            <% end %>
           </:col>
           <:action :let={video}>
             <.button navigate={~p"/videos/#{video.yt_video_id}"} id={"video-#{video.yt_video_id}"}>
@@ -338,13 +342,6 @@ defmodule R8yV4Web.ChannelLive.Show do
 
   defp youtube_comment_url(yt_video_id, yt_comment_id) do
     "https://www.youtube.com/watch?v=#{yt_video_id}&lc=#{yt_comment_id}"
-  end
-
-  defp video_sponsor_label(video) do
-    case Enum.at(video.sponsors || [], 0) do
-      nil -> "—"
-      sponsor -> sponsor.name
-    end
   end
 
   defp format_notification_type(nil), do: "unknown"

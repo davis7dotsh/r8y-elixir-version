@@ -109,9 +109,9 @@ defmodule R8yV4Web.VideoLive.Show do
                     {format_number(@video.comment_count)} comments
                   </span>
                   <%= if sponsor = Enum.at(@video.sponsors || [], 0) do %>
-                    <span class="text-xs px-2 py-1 rounded bg-success/20 text-success">
+                    <.link navigate={~p"/sponsors/#{sponsor.sponsor_id}"} class="text-xs px-2 py-1 rounded bg-success/20 text-success hover:bg-success/30 transition-colors">
                       Sponsor: {sponsor.name}
-                    </span>
+                    </.link>
                   <% end %>
                 </div>
 
