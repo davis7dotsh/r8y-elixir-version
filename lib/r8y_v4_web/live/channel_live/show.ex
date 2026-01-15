@@ -163,8 +163,8 @@ defmodule R8yV4Web.ChannelLive.Show do
 
   defp render_overview(assigns) do
     ~H"""
-    <div class="card">
-      <div class="flex items-center justify-between mb-4">
+    <div class="card-scrollable">
+      <div class="flex items-center justify-between mb-4 flex-shrink-0">
         <h2 class="font-medium text-base-content">Recent Videos</h2>
         <span class="text-xs text-base-content/40">Showing latest 50</span>
       </div>
@@ -175,31 +175,36 @@ defmodule R8yV4Web.ChannelLive.Show do
           <p class="text-sm text-base-content/50">No videos synced yet</p>
         </div>
       <% else %>
-        <.table id="channel-videos" rows={@videos}>
-          <:col :let={video} label="Date">
-            <span class="text-sm tabular-nums">{format_date(video.published_at)}</span>
-          </:col>
-          <:col :let={video} label="Title">
-            <span class="truncate max-w-md block">{video.title}</span>
-          </:col>
-          <:col :let={video} label="Views">
-            <span class="text-sm tabular-nums">{format_number(video.view_count)}</span>
-          </:col>
-          <:col :let={video} label="Sponsor">
-            <%= if sponsor = Enum.at(video.sponsors || [], 0) do %>
-              <.link navigate={~p"/sponsors/#{sponsor.sponsor_id}"} class="text-sm text-success hover:underline">
-                {sponsor.name}
-              </.link>
-            <% else %>
-              <span class="text-sm">—</span>
-            <% end %>
-          </:col>
-          <:action :let={video}>
-            <.button navigate={~p"/videos/#{video.yt_video_id}"} id={"video-#{video.yt_video_id}"}>
-              View
-            </.button>
-          </:action>
-        </.table>
+        <div class="card-scrollable-content">
+          <.table id="channel-videos" rows={@videos}>
+            <:col :let={video} label="Date">
+              <span class="text-sm tabular-nums">{format_date(video.published_at)}</span>
+            </:col>
+            <:col :let={video} label="Title">
+              <span class="truncate max-w-md block">{video.title}</span>
+            </:col>
+            <:col :let={video} label="Views">
+              <span class="text-sm tabular-nums">{format_number(video.view_count)}</span>
+            </:col>
+            <:col :let={video} label="Sponsor">
+              <%= if sponsor = Enum.at(video.sponsors || [], 0) do %>
+                <.link
+                  navigate={~p"/sponsors/#{sponsor.sponsor_id}"}
+                  class="text-sm text-success hover:underline"
+                >
+                  {sponsor.name}
+                </.link>
+              <% else %>
+                <span class="text-sm">—</span>
+              <% end %>
+            </:col>
+            <:action :let={video}>
+              <.button navigate={~p"/videos/#{video.yt_video_id}"} id={"video-#{video.yt_video_id}"}>
+                View
+              </.button>
+            </:action>
+          </.table>
+        </div>
       <% end %>
     </div>
     """
@@ -207,8 +212,8 @@ defmodule R8yV4Web.ChannelLive.Show do
 
   defp render_sponsors(assigns) do
     ~H"""
-    <div class="card">
-      <h2 class="font-medium text-base-content mb-4">Detected Sponsors</h2>
+    <div class="card-scrollable">
+      <h2 class="font-medium text-base-content mb-4 flex-shrink-0">Detected Sponsors</h2>
 
       <%= if @sponsors == [] do %>
         <div class="text-center py-8">
@@ -216,29 +221,31 @@ defmodule R8yV4Web.ChannelLive.Show do
           <p class="text-sm text-base-content/50">No sponsors detected</p>
         </div>
       <% else %>
-        <.table id="channel-sponsors" rows={@sponsors} row_item={fn row -> row end}>
-          <:col :let={row} label="Sponsor">
-            <.link
-              navigate={~p"/sponsors/#{row.sponsor.sponsor_id}"}
-              id={"sponsor-#{row.sponsor.sponsor_id}"}
-              class="text-primary hover:underline font-medium"
-            >
-              {row.sponsor.name}
-            </.link>
-          </:col>
-          <:col :let={row} label="Ads">
-            <span class="tabular-nums">{format_number(row.total_videos)}</span>
-          </:col>
-          <:col :let={row} label="Views">
-            <span class="tabular-nums">{format_number(row.total_views)}</span>
-          </:col>
-          <:col :let={row} label="Avg">
-            <span class="tabular-nums">{format_number(row.avg_views_per_video)}</span>
-          </:col>
-          <:col :let={row} label="Last">
-            <span class="text-sm tabular-nums">{format_date(row.last_video_published_at)}</span>
-          </:col>
-        </.table>
+        <div class="card-scrollable-content">
+          <.table id="channel-sponsors" rows={@sponsors} row_item={fn row -> row end}>
+            <:col :let={row} label="Sponsor">
+              <.link
+                navigate={~p"/sponsors/#{row.sponsor.sponsor_id}"}
+                id={"sponsor-#{row.sponsor.sponsor_id}"}
+                class="text-primary hover:underline font-medium"
+              >
+                {row.sponsor.name}
+              </.link>
+            </:col>
+            <:col :let={row} label="Ads">
+              <span class="tabular-nums">{format_number(row.total_videos)}</span>
+            </:col>
+            <:col :let={row} label="Views">
+              <span class="tabular-nums">{format_number(row.total_views)}</span>
+            </:col>
+            <:col :let={row} label="Avg">
+              <span class="tabular-nums">{format_number(row.avg_views_per_video)}</span>
+            </:col>
+            <:col :let={row} label="Last">
+              <span class="text-sm tabular-nums">{format_date(row.last_video_published_at)}</span>
+            </:col>
+          </.table>
+        </div>
       <% end %>
     </div>
     """
@@ -246,8 +253,8 @@ defmodule R8yV4Web.ChannelLive.Show do
 
   defp render_mentions(assigns) do
     ~H"""
-    <div class="card">
-      <div class="flex items-center justify-between mb-4">
+    <div class="card-scrollable">
+      <div class="flex items-center justify-between mb-4 flex-shrink-0">
         <h2 class="font-medium text-base-content">Sponsor Mentions</h2>
         <span class="text-xs text-base-content/40">Latest 40 comments</span>
       </div>
@@ -258,33 +265,35 @@ defmodule R8yV4Web.ChannelLive.Show do
           <p class="text-sm text-base-content/50">No sponsor mentions found</p>
         </div>
       <% else %>
-        <.table id="channel-mentions" rows={@sponsor_mentions} row_item={fn row -> row end}>
-          <:col :let={row} label="Comment">
-            <span class="block max-w-md truncate">{row.comment.text}</span>
-          </:col>
-          <:col :let={row} label="Video">
-            <.link
-              navigate={~p"/videos/#{row.yt_video_id}"}
-              class="text-primary hover:underline text-sm truncate max-w-[150px] block"
-            >
-              {row.video_title}
-            </.link>
-          </:col>
-          <:col :let={row} label="Author">
-            <span class="text-sm">{row.comment.author}</span>
-          </:col>
-          <:col :let={row} label="Likes">
-            <span class="tabular-nums">{format_number(row.comment.like_count)}</span>
-          </:col>
-          <:action :let={row}>
-            <.button
-              href={youtube_comment_url(row.yt_video_id, row.comment.yt_comment_id)}
-              id={"open-mention-#{row.comment.yt_comment_id}"}
-            >
-              Open
-            </.button>
-          </:action>
-        </.table>
+        <div class="card-scrollable-content">
+          <.table id="channel-mentions" rows={@sponsor_mentions} row_item={fn row -> row end}>
+            <:col :let={row} label="Comment">
+              <span class="block max-w-md truncate">{row.comment.text}</span>
+            </:col>
+            <:col :let={row} label="Video">
+              <.link
+                navigate={~p"/videos/#{row.yt_video_id}"}
+                class="text-primary hover:underline text-sm truncate max-w-[150px] block"
+              >
+                {row.video_title}
+              </.link>
+            </:col>
+            <:col :let={row} label="Author">
+              <span class="text-sm">{row.comment.author}</span>
+            </:col>
+            <:col :let={row} label="Likes">
+              <span class="tabular-nums">{format_number(row.comment.like_count)}</span>
+            </:col>
+            <:action :let={row}>
+              <.button
+                href={youtube_comment_url(row.yt_video_id, row.comment.yt_comment_id)}
+                id={"open-mention-#{row.comment.yt_comment_id}"}
+              >
+                Open
+              </.button>
+            </:action>
+          </.table>
+        </div>
       <% end %>
     </div>
     """
@@ -292,8 +301,8 @@ defmodule R8yV4Web.ChannelLive.Show do
 
   defp render_notifications(assigns) do
     ~H"""
-    <div class="card">
-      <div class="flex items-center justify-between mb-4">
+    <div class="card-scrollable">
+      <div class="flex items-center justify-between mb-4 flex-shrink-0">
         <h2 class="font-medium text-base-content">Notification Log</h2>
         <span class="text-xs text-base-content/40">Last 50 entries</span>
       </div>
@@ -304,34 +313,36 @@ defmodule R8yV4Web.ChannelLive.Show do
           <p class="text-sm text-base-content/50">No notifications logged</p>
         </div>
       <% else %>
-        <.table id="channel-notifications" rows={@notifications} row_item={fn row -> row end}>
-          <:col :let={row} label="Type">
-            <span class="text-sm">{format_notification_type(row.notification.type)}</span>
-          </:col>
-          <:col :let={row} label="Status">
-            <span class={[
-              "text-xs px-2 py-0.5 rounded",
-              row.notification.success && "bg-success/20 text-success",
-              !row.notification.success && "bg-error/20 text-error"
-            ]}>
-              {if row.notification.success, do: "OK", else: "FAIL"}
-            </span>
-          </:col>
-          <:col :let={row} label="Message">
-            <span class="block max-w-md truncate">{row.notification.message}</span>
-          </:col>
-          <:col :let={row} label="Video">
-            <.link
-              navigate={~p"/videos/#{row.yt_video_id}"}
-              class="text-primary hover:underline text-sm truncate max-w-[100px] block"
-            >
-              {row.video_title}
-            </.link>
-          </:col>
-          <:col :let={row} label="Time">
-            <span class="text-sm tabular-nums">{format_datetime(row.notification.created_at)}</span>
-          </:col>
-        </.table>
+        <div class="card-scrollable-content">
+          <.table id="channel-notifications" rows={@notifications} row_item={fn row -> row end}>
+            <:col :let={row} label="Type">
+              <span class="text-sm">{format_notification_type(row.notification.type)}</span>
+            </:col>
+            <:col :let={row} label="Status">
+              <span class={[
+                "text-xs px-2 py-0.5 rounded",
+                row.notification.success && "bg-success/20 text-success",
+                !row.notification.success && "bg-error/20 text-error"
+              ]}>
+                {if row.notification.success, do: "OK", else: "FAIL"}
+              </span>
+            </:col>
+            <:col :let={row} label="Message">
+              <span class="block max-w-md truncate">{row.notification.message}</span>
+            </:col>
+            <:col :let={row} label="Video">
+              <.link
+                navigate={~p"/videos/#{row.yt_video_id}"}
+                class="text-primary hover:underline text-sm truncate max-w-[100px] block"
+              >
+                {row.video_title}
+              </.link>
+            </:col>
+            <:col :let={row} label="Time">
+              <span class="text-sm tabular-nums">{format_datetime(row.notification.created_at)}</span>
+            </:col>
+          </.table>
+        </div>
       <% end %>
     </div>
     """

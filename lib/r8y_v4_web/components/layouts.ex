@@ -20,30 +20,32 @@ defmodule R8yV4Web.Layouts do
 
   def app(assigns) do
     ~H"""
-    <header class="sticky top-0 z-40 bg-base-200 border-b border-neutral">
-      <div class="max-w-6xl mx-auto px-4 sm:px-6">
-        <div class="flex items-center justify-between h-14">
-          <a href="/" class="flex items-center gap-2">
-            <span class="text-lg font-semibold text-primary">R8Y</span>
-          </a>
+    <div class="h-screen flex flex-col bg-base-200">
+      <header class="flex-shrink-0 z-40 bg-base-200 border-b border-neutral">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6">
+          <div class="flex items-center justify-between h-14">
+            <a href="/" class="flex items-center gap-2">
+              <span class="text-lg font-semibold text-primary">R8Y</span>
+            </a>
 
-          <nav class="flex items-center gap-1">
-            <.nav_link href={~p"/channels"} icon="hero-tv">Channels</.nav_link>
-            <.nav_link href={~p"/videos"} icon="hero-play">Videos</.nav_link>
-            <.nav_link href={~p"/sponsors"} icon="hero-currency-dollar">Sponsors</.nav_link>
-            <.nav_link href={~p"/search"} icon="hero-magnifying-glass">Search</.nav_link>
-          </nav>
+            <nav class="flex items-center gap-1">
+              <.nav_link href={~p"/channels"} icon="hero-tv">Channels</.nav_link>
+              <.nav_link href={~p"/videos"} icon="hero-play">Videos</.nav_link>
+              <.nav_link href={~p"/sponsors"} icon="hero-currency-dollar">Sponsors</.nav_link>
+              <.nav_link href={~p"/search"} icon="hero-magnifying-glass">Search</.nav_link>
+            </nav>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
 
-    <main class="min-h-[calc(100vh-3.5rem)]">
-      <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6">
-        {render_slot(@inner_block)}
-      </div>
-    </main>
+      <main class="flex-1 overflow-y-auto">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 pb-12">
+          {render_slot(@inner_block)}
+        </div>
+      </main>
 
-    <.flash_group flash={@flash} />
+      <.flash_group flash={@flash} />
+    </div>
     """
   end
 

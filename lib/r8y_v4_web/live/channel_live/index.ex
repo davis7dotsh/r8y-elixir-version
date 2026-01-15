@@ -35,8 +35,12 @@ defmodule R8yV4Web.ChannelLive.Index do
           </.button>
         </div>
 
-        <div class="card">
-          <div id="channels" phx-update="stream" class="divide-y divide-neutral">
+        <div class="card-scrollable">
+          <div
+            id="channels"
+            phx-update="stream"
+            class="card-scrollable-content divide-y divide-neutral"
+          >
             <div
               id="channels-empty"
               class="hidden only:flex flex-col items-center justify-center py-12 text-center"

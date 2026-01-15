@@ -90,8 +90,8 @@ defmodule R8yV4Web.SponsorLive.Show do
             </div>
           </div>
 
-          <div class="card">
-            <h2 class="font-medium text-base-content mb-4">Sponsored Videos</h2>
+          <div class="card-scrollable">
+            <h2 class="font-medium text-base-content mb-4 flex-shrink-0">Sponsored Videos</h2>
 
             <%= if @details.videos == [] do %>
               <div class="py-8 text-center">
@@ -99,30 +99,32 @@ defmodule R8yV4Web.SponsorLive.Show do
                 <p class="text-sm text-base-content/50">No videos found</p>
               </div>
             <% else %>
-              <.table id="sponsor-videos" rows={@details.videos}>
-                <:col :let={video} label="Date">
-                  <span class="text-sm tabular-nums">{format_date(video.published_at)}</span>
-                </:col>
-                <:col :let={video} label="Title">
-                  <span class="truncate max-w-md block">{video.title}</span>
-                </:col>
-                <:col :let={video} label="Views">
-                  <span class="tabular-nums">{format_number(video.view_count)}</span>
-                </:col>
-                <:action :let={video}>
-                  <.button
-                    navigate={~p"/videos/#{video.yt_video_id}"}
-                    id={"sponsor-video-#{video.yt_video_id}"}
-                  >
-                    View
-                  </.button>
-                </:action>
-              </.table>
+              <div class="card-scrollable-content">
+                <.table id="sponsor-videos" rows={@details.videos}>
+                  <:col :let={video} label="Date">
+                    <span class="text-sm tabular-nums">{format_date(video.published_at)}</span>
+                  </:col>
+                  <:col :let={video} label="Title">
+                    <span class="truncate max-w-md block">{video.title}</span>
+                  </:col>
+                  <:col :let={video} label="Views">
+                    <span class="tabular-nums">{format_number(video.view_count)}</span>
+                  </:col>
+                  <:action :let={video}>
+                    <.button
+                      navigate={~p"/videos/#{video.yt_video_id}"}
+                      id={"sponsor-video-#{video.yt_video_id}"}
+                    >
+                      View
+                    </.button>
+                  </:action>
+                </.table>
+              </div>
             <% end %>
           </div>
 
-          <div class="card">
-            <h2 class="font-medium text-base-content mb-4">Sponsor Mentions</h2>
+          <div class="card-scrollable">
+            <h2 class="font-medium text-base-content mb-4 flex-shrink-0">Sponsor Mentions</h2>
 
             <%= if @details.sponsor_mention_comments == [] do %>
               <div class="py-8 text-center">
@@ -133,9 +135,9 @@ defmodule R8yV4Web.SponsorLive.Show do
                 <p class="text-sm text-base-content/50">No mentions found</p>
               </div>
             <% else %>
-              <div class="overflow-x-auto">
+              <div class="card-scrollable-content overflow-x-auto">
                 <table class="w-full text-sm">
-                  <thead>
+                  <thead class="sticky top-0 bg-[oklch(19%_0_0)]">
                     <tr class="border-b border-base-300">
                       <th class="text-left py-3 px-3 font-medium text-base-content/60">Comment</th>
                       <th class="text-left py-3 px-3 font-medium text-base-content/60">Video</th>

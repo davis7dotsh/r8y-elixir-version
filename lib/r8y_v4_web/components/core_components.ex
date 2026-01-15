@@ -287,7 +287,7 @@ defmodule R8yV4Web.CoreComponents do
     ~H"""
     <div class="overflow-x-auto">
       <table class="w-full text-sm">
-        <thead>
+        <thead class="sticky top-0 bg-[oklch(19%_0_0)]">
           <tr class="border-b border-base-300">
             <th :for={col <- @col} class="text-left py-3 px-3 font-medium text-base-content/60">
               {col[:label]}

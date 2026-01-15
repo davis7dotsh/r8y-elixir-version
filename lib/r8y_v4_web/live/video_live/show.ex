@@ -109,7 +109,10 @@ defmodule R8yV4Web.VideoLive.Show do
                     {format_number(@video.comment_count)} comments
                   </span>
                   <%= if sponsor = Enum.at(@video.sponsors || [], 0) do %>
-                    <.link navigate={~p"/sponsors/#{sponsor.sponsor_id}"} class="text-xs px-2 py-1 rounded bg-success/20 text-success hover:bg-success/30 transition-colors">
+                    <.link
+                      navigate={~p"/sponsors/#{sponsor.sponsor_id}"}
+                      class="text-xs px-2 py-1 rounded bg-success/20 text-success hover:bg-success/30 transition-colors"
+                    >
                       Sponsor: {sponsor.name}
                     </.link>
                   <% end %>
@@ -125,8 +128,8 @@ defmodule R8yV4Web.VideoLive.Show do
             </div>
           </div>
 
-          <div class="card">
-            <div class="flex items-center justify-between mb-4">
+          <div class="card-scrollable">
+            <div class="flex items-center justify-between mb-4 flex-shrink-0">
               <div class="flex items-center gap-2">
                 <h2 class="font-medium text-base-content">Comments</h2>
                 <span class="text-xs text-base-content/40">(up to {@comments_limit})</span>
@@ -185,7 +188,7 @@ defmodule R8yV4Web.VideoLive.Show do
               </div>
             </div>
 
-            <div id="comments" phx-update="stream" class="space-y-3">
+            <div id="comments" phx-update="stream" class="card-scrollable-content space-y-3">
               <div
                 id="comments-empty"
                 class="hidden only:flex flex-col items-center justify-center py-8 text-center"
@@ -263,13 +266,13 @@ defmodule R8yV4Web.VideoLive.Show do
             </div>
           </div>
 
-          <div class="card">
-            <div class="flex items-center gap-2 mb-4">
+          <div class="card-scrollable">
+            <div class="flex items-center gap-2 mb-4 flex-shrink-0">
               <h2 class="font-medium text-base-content">Notifications</h2>
               <span class="text-xs text-base-content/40">(last 50)</span>
             </div>
 
-            <div id="notifications" class="space-y-3">
+            <div id="notifications" class="card-scrollable-content space-y-3">
               <div :if={@notifications == []} class="py-8 text-center">
                 <.icon name="hero-bell" class="size-10 text-base-content/10 mx-auto mb-2" />
                 <p class="text-sm text-base-content/50">No notifications logged</p>

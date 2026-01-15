@@ -35,8 +35,8 @@ defmodule R8yV4Web.VideoLive.Index do
           </.button>
         </div>
 
-        <div class="card">
-          <div id="videos" phx-update="stream" class="divide-y divide-neutral">
+        <div class="card-scrollable">
+          <div id="videos" phx-update="stream" class="card-scrollable-content divide-y divide-neutral">
             <div
               id="videos-empty"
               class="hidden only:flex flex-col items-center justify-center py-12 text-center"
@@ -96,7 +96,10 @@ defmodule R8yV4Web.VideoLive.Index do
                       {format_number(video.like_count)} likes
                     </span>
                     <%= if sponsor = Enum.at(video.sponsors || [], 0) do %>
-                      <.link navigate={~p"/sponsors/#{sponsor.sponsor_id}"} class="text-xs px-2 py-0.5 rounded bg-success/20 text-success hover:bg-success/30 transition-colors">
+                      <.link
+                        navigate={~p"/sponsors/#{sponsor.sponsor_id}"}
+                        class="text-xs px-2 py-0.5 rounded bg-success/20 text-success hover:bg-success/30 transition-colors"
+                      >
                         {sponsor.name}
                       </.link>
                     <% end %>

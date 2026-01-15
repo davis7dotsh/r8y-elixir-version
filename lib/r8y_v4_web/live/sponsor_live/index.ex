@@ -122,8 +122,8 @@ defmodule R8yV4Web.SponsorLive.Index do
           </.form>
         </div>
 
-        <div class="card">
-          <div class="flex items-center justify-between mb-4">
+        <div class="card-scrollable">
+          <div class="flex items-center justify-between mb-4 flex-shrink-0">
             <h2 class="font-medium text-base-content">Detected Sponsors</h2>
             <span class="text-xs text-base-content/40">{length(@sponsors)} results</span>
           </div>
